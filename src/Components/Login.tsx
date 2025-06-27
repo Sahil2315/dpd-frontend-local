@@ -1,5 +1,5 @@
 import { baseAPI } from "../API"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { toast } from "sonner"
 import { useNavigate } from "react-router-dom"
 import { Toggle } from "./ui/toggle"
@@ -11,6 +11,17 @@ const Login = () => {
   const [uName, setUname] = useState<string>("")
   const [pWord, setPword] = useState<string>("")
   const [loading, toggleLoading] = useState<boolean>(false)
+  function autoFill(){
+    if(managerLogin){
+      setUname("brucdav")
+      setPword("password123")
+    }
+    else{
+      setUname("johndoe")
+      setPword("password123")
+    }
+  }
+  useEffect
   async function LoginSubmit() {
     if (uName && pWord){
       toggleLoading(true)
@@ -76,6 +87,7 @@ const Login = () => {
             <span className="mt-8 w-[80%] text-2xl">Password</span>
             <input value={pWord} onChange={(e) => setPword(e.target.value)} className="w-[80%] border-gray-400/40 border-2 rounded-lg text-xl py-1 px-2 mt-2" type="password" />
             <button className="mt-8 bg-indigo-700/50 px-4 py-1 rounded-lg text-lg hover:bg-indigo-700/70" onClick={LoginSubmit}>Login</button>
+            <button className="mt-8 bg-emerald-500/50 px-4 py-1 rounded-lg text-lg hover:bg-emerald-500/70" onClick={autoFill}>Auto Fill Login Details</button>
           </div>
         </div>
         <div className="px-8 flex-2 flex flex-col justify-center items-center">
