@@ -7,23 +7,27 @@ import { useEffect, useState } from "react"
 import { baseAPI } from "../API"
 import FeedbackInfo from "./FeedbackInfo"
 import AddFeedback from "./AddFeedback";
+import MediumLoader from "./MediumLoader";
 
 
 const MemberInfo = ({memInfo, manid}: {memInfo: teamMember, manid: number}) => {
     const [feedbacks, setFeedbacks] = useState<Feedback[]>([])
-      useEffect(() => {
-        async function Initialize(){
-          let req = await fetch(baseAPI + `/api/fb/getEmpFeedbacks/${memInfo.empid}`, {
-            'method': "GET",
-            'headers':{
-              'Content-Type': 'application/json'
+    const [loading, toggleLoading] = useState<boolean>(false)
+        useEffect(() => {
+            async function Initialize(){
+                toggleLoading(true)
+                let req = await fetch(baseAPI + `/api/fb/getEmpFeedbacks/${memInfo.empid}`, {
+                    'method': "GET",
+                    'headers':{
+                        'Content-Type': 'application/json'
+                    }
+                    })
+                let resp = await req.json()
+                toggleLoading(false)
+                setFeedbacks(resp.reverse())
             }
-          })
-          let resp = await req.json()
-          setFeedbacks(resp.reverse())
-        }
-        Initialize()
-      }, [])
+            Initialize()
+        }, [])
   return (
     <Dialog>
         <DialogTrigger className="flex mt-4 flex-row py-2 text-lg px-4 bg-indigo-500/25 items-center rounded-lg hover:bg-indigo-600/40">
@@ -41,18 +45,21 @@ const MemberInfo = ({memInfo, manid}: {memInfo: teamMember, manid: number}) => {
                     {memInfo.name} - {memInfo.jobTitle}
                 </DialogTitle>
                 <DialogDescription>
-                    <div className="mt-4">
-                        <span className="text-lg">Given Feedbacks:</span>
-                        {
-                            feedbacks.length == 0 ? <div className="mt-4 text-lg">No Feedbacks Given</div> :
-                            feedbacks.map((fb, index) => {
-                                return(
-                                    <FeedbackInfo large={false} key={index} fbInfo={fb} />
-                                )
-                            })
-                        }
-                        <AddFeedback manid={manid} memInfo={memInfo} />
-                    </div>
+                    {
+                        loading ? <MediumLoader visible={loading} /> : 
+                        <div className="mt-4">
+                            <span className="text-lg">Given Feedbacks:</span>
+                            {
+                                feedbacks.length == 0 ? <div className="mt-4 text-lg">No Feedbacks Given</div> :
+                                feedbacks.map((fb, index) => {
+                                    return(
+                                        <FeedbackInfo large={false} key={index} fbInfo={fb} />
+                                    )
+                                })
+                            }
+                            <AddFeedback manid={manid} memInfo={memInfo} />
+                        </div>
+                    }
                     
                 </DialogDescription>
             </DialogHeader>
